@@ -1,0 +1,40 @@
+{
+  "name": "blackforest/namespace-compat",
+  "description":"Composer Namespace Compat",
+  "keywords":["composer", "namespace", "compat", "transfer", "abandoned"],
+  "type":"composer-plugin",
+  "license":"LGPL-3.0+",
+  "minimum-stability": "dev",
+  "authors": [
+    {
+      "name": "Dominik Tomasi",
+      "email": "dominik.tomasi@gmail.com"
+    },
+    {
+      "name": "Sven Baumann",
+      "email": "baumannsv@gmail.com"
+    }
+  ],
+  "support":{
+    "issues":"https://github.com/black-forest/namespace-compat/issues",
+    "irc":"irc://irc.freenode.org/contao.dev",
+    "source":"https://github.com/black-forest/namespace-compat"
+  },
+  "require": {
+    "php": ">=5.3",
+    "composer-plugin-api": "1.0.0"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "3.7.*",
+    "blackforest/namespace-compat-tests": "*"
+  },
+  "autoload": {
+    "psr-4": {
+      "BlackForest\\": "src/"
+    },
+    "file": ["compat/namespace_compat.php"]
+  },
+  "extra": {
+    "class": "BlackForest\\Composer\\Plugin\\Plugin"
+  }
+}
