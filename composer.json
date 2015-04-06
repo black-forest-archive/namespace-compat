@@ -32,9 +32,9 @@
     "psr-4": {
       "BlackForest\\": "src/"
     },
-    "file": ["compat/namespace_compat.php"]
+    "files": ["compat/namespace_compat.php"]
   },
   "extra": {
-    "class": "BlackForest\\Composer\\Plugin\\Plugin"
+    "class": "BlackForest\\Composer\\Plugin\\CompatPlugin"
   }
 }
