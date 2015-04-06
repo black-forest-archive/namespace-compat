@@ -7,7 +7,7 @@
  * @copyright  BlackForest <https://github.com/black-forest>
  * @author     Dominik Tomasi <dominik.tomasi@gmail.com>
  * @author     Sven Baumann <baumannsv@gmail.com>
- * @package    BlackForest\Composer\Plugin
+ * @package    blackforest/namespace-compat
  * @license    LGPL
  */
 
@@ -23,7 +23,7 @@ use Composer\Plugin\PluginInterface;
 
 /**
  * Class CompatPlugin
- * @package BlackForest\Composer\Plugin
+ * @package blackforest/namespace-compat
  */
 class CompatPlugin implements PluginInterface
 {
@@ -58,6 +58,9 @@ class CompatPlugin implements PluginInterface
         $this->createCompatFile();
     }
 
+    /**
+     * find all compat package and push to $this->compat
+     */
     protected function createCompat()
     {
         /** @var \Composer\Autoload\ClassMapGenerator $generator */

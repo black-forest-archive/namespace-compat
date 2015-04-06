@@ -17,7 +17,7 @@ use Composer\Composer;
 
 
 /**
- * Class Repository
+ * Class Package
  * @package blackforest/namespace-compat
  */
 class Package
