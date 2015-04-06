@@ -35,6 +35,6 @@
     "file": ["compat/namespace_compat.php"]
   },
   "extra": {
-    "class": "BlackForest\\Composer\\Plugin\\Plugin"
+    "class": "BlackForest\\Composer\\Plugin\\CompatPlugin"
   }
 }
