@@ -19,7 +19,7 @@ The new file provides the old to the new namespace.
     ```json
     {
         "extra": {
-            "namespace": {
+            "namespace-compat": {
                 "OldNamespace": "NewNamespace"
             }
         }
