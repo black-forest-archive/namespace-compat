@@ -18,14 +18,22 @@ namespace BlackForest\Composer\Plugin;
 use BlackForest\Composer\Compat\Package;
 use Composer\Autoload\ClassMapGenerator;
 use Composer\Composer;
+use Composer\EventDispatcher\EventSubscriberInterface;
+use Composer\Installer\InstallerEvents;
+use Composer\Installer\PackageEvents;
 use Composer\IO\IOInterface;
+use Composer\Package\BasePackage;
+use Composer\Package\CompletePackage;
+use Composer\Plugin\PluginEvents;
 use Composer\Plugin\PluginInterface;
+use Composer\Plugin\PluginManager;
+use Composer\Script\ScriptEvents;
 
 /**
  * Class CompatPlugin
  * @package blackforest/namespace-compat
  */
-class CompatPlugin implements PluginInterface
+class CompatPlugin implements PluginInterface, EventSubscriberInterface
 {
     protected $composer;
 
@@ -45,9 +53,31 @@ class CompatPlugin implements PluginInterface
     {
         $this->composer = $composer;
         $this->io = $io;
+    }
 
+    public static function getSubscribedEvents()
+    {
+        return array(
+            PackageEvents::POST_PACKAGE_INSTALL => 'handlePostPackageInstall',
+            PackageEvents::POST_PACKAGE_UPDATE => 'handlePostPackageUpdate',
+            InstallerEvents::POST_DEPENDENCIES_SOLVING => 'handlePostDependenciesSolving'
+        );
+    }
+
+    public function handlePostPackageInstall()
+    {
+        $this->handlePostDependenciesSolving();
+    }
+
+    public function handlePostPackageUpdate()
+    {
+        $this->handlePostDependenciesSolving();
+    }
+
+    public function handlePostDependenciesSolving()
+    {
         /** @var \BlackForest\Composer\Compat\Package $package */
-        $combatCackage = new Package($composer);
+        $combatCackage = new Package($this->composer);
         $combatCackage->compile();
 
         if (count($combatCackage->package) > 0) {
@@ -130,7 +160,7 @@ class CompatPlugin implements PluginInterface
 ';
         if (is_array($this->compat)) {
             foreach ($this->compat as $old => $new) {
-                $content .= '/** package ' . $new['package']->getPrettyName() . ' */'. "\n";
+                $content .= '/** package ' . $new['package']->getPrettyName() . ' */' . "\n";
                 unset($new['package']);
 
                 if (count($new) < 0) {
@@ -168,47 +198,15 @@ class CompatPlugin implements PluginInterface
             return false;
         }
 
-        $filePath = '';
-
-        /** @var \Composer\Repository\InstalledFilesystemRepository $localRepository */
-        $localRepository = $this->composer->getRepositoryManager()->getLocalRepository();
-        $namespaceCompatPackage = $localRepository->findPackages('blackforest/namespace-compat');
         $vendorPath = $this->composer->getConfig()->get('vendor-dir');
 
-        // $namespaceCompatPackage is an base package
-        if (count($namespaceCompatPackage) < 1) {
-            $filePath .= $vendorPath;
-
-            if (!file_exists($filePath . '/composer.json')) {
-                $findBasePath = true;
-
-                while ($findBasePath) {
-                    $filePath .= dirname($filePath);
-                    if (file_exists($filePath . '/composer.json')) {
-                        $findBasePath = false;
-                    }
-                }
-            }
-        }
-
-        // $namespaceCompatPackage is installed as vendor package
-        if (count($namespaceCompatPackage) > 0) {
-            /** @var \Composer\Installer\InstallationManager $installationManager */
-            $installationManager = $this->composer->getInstallationManager();
-
-            foreach ($namespaceCompatPackage as $searchPackage) {
-                if ($searchPackage->getPrettyName() === 'blackforest/namespace-compat') {
-                    $filePath = $installationManager->getInstallPath($searchPackage);
-                }
-            }
-        }
-
-        $filePath .= '/compat';
+        $filePath = $vendorPath;
+        $filePath .= '/blackforest/namespace-compat/compat';
         if (!is_dir($filePath)) {
             mkdir($filePath, 0777);
         }
-
         $filePath .= '/namespace_compat.php';
+
         file_put_contents($filePath, $content);
 
         $this->io->write('<info>Generating namespace_compat.php file</info>');
